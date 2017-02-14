@@ -36,6 +36,7 @@ def whoAmI(auth, token):
     me = json.loads(response.content)
 
     name = me['displayName'].split()[0]
+    print("I am {}".format(name))
     return name
 
 name = whoAmI(auth, token)
@@ -171,8 +172,10 @@ def buildEmail(message, message_text):
                'content "{1}"'.format(subject, content, recipients)
 
     if content != None:
+        print("Content Found - Sending email")
         sendEmail(subject, content, recipients)
     else:
+        print("Error - User - empty content")
         response = 'You must specify content\n\n' + help()
     return response
 
