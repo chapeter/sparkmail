@@ -210,13 +210,13 @@ def injest():
             response = version
             spark_msg = version
         elif msg.split()[0] == '-email':
-            response = buildEmail(message, message_text)
+            response = buildEmail(message, msg)
             spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
         elif msg.split()[0] == 'help':
             response = help()
             spark_msg = response
         else:
-            response = buildEmail(message, message_text)
+            response = buildEmail(message, msg)
             spark_msg = response
 
         room = Room(attributes={'id':message.roomId})
