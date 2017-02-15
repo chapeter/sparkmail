@@ -217,7 +217,7 @@ def injest():
             spark_msg = response
         else:
             response = buildEmail(message, msg)
-            spark_msg = response
+            spark_msg = "Email Sent"
 
         room = Room(attributes={'id':message.roomId})
         room.send_message(session, spark_msg)
