@@ -197,7 +197,7 @@ def injest():
     elif msg.split()[0] == '-email':
         response = buildEmail(message, message_text)
         spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
-    elif msg.split()[] == 'help':
+    elif msg.split()[0] == 'help':
         response = help()
         spark_msg = response
     else:
