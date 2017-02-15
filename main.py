@@ -15,6 +15,8 @@ import os
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
+version = '0.2'
+
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
 session = Session(url, token)
@@ -43,13 +45,8 @@ name = whoAmI(auth, token)
 
 
 def help():
-    response = "Here is what I can do:\n" \
-               "-email - send email to everyone in the room\n" \
-               "-subject - set subject\n" \
-               "-content - set content of email\n" \
-               "\n" \
-               "Example:\n" \
-               "-email -subject 'example' -content 'content'"
+    response = "Just message me and I will send the content of that message via email to all members of the room"
+    
     return response
 
 def getRoomName(roomId):
@@ -92,7 +89,7 @@ def getContent(message_text):
             content = i[begin:end]
             break
         else:
-            content = None
+            content = message_text
 
     return content
 
@@ -188,14 +185,18 @@ def injest():
     message_text = message.attributes['text']
 
     msg = message_text.split(name)
+    print("removing {} from message".format(name))
     msg = msg[1].strip()
 
     print(msg)
 
 
-    if msg.split()[0] == '-email':
+    if msg.split()[0] == '-version':
+        response = version
+        spark_msg = version
+    elif msg.split()[0] == '-email':
         response = buildEmail(message, message_text)
-        spark_msg = response
+        spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
     else:
         response = help()
         spark_msg = response
