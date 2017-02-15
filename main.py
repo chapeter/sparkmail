@@ -46,7 +46,7 @@ name = whoAmI(auth, token)
 
 def help():
     response = "Just message me and I will send the content of that message via email to all members of the room"
-    
+
     return response
 
 def getRoomName(roomId):
