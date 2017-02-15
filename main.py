@@ -41,8 +41,21 @@ def whoAmI(auth, token):
     print("I am {}".format(name))
     return name
 
-name = whoAmI(auth, token)
+def myID(auth, token):
+    url = 'https://api.ciscospark.com/v1/people/me'
+    headers = {'content-type':'applicaiton/json', 'authorization':auth}
 
+    response = requests.request("GET", url, headers=headers)
+
+    me = json.loads(response.content)
+
+    myid = me['id']
+    #print("I am {}".format(name))
+    return myid
+
+
+name = whoAmI(auth, token)
+myid = myID(auth, token)
 
 def help():
     response = "Just message me and I will send the content of that message via email to all members of the room"
@@ -182,32 +195,34 @@ def injest():
     message_id = data['data']['id']
 
     message = Message.get(session, message_id)
-    message_text = message.attributes['text']
+    sender = message.attributes['personId']
+    if sender != myid:
+        message_text = message.attributes['text']
 
-    msg = message_text.split(name)
-    print("removing {} from message".format(name))
-    msg = msg[1].strip()
+        msg = message_text.split(name)
+        print("removing {} from message".format(name))
+        msg = msg[1].strip()
 
-    print(msg)
-
-
-    if msg.split()[0] == '-version':
-        response = version
-        spark_msg = version
-    elif msg.split()[0] == '-email':
-        response = buildEmail(message, message_text)
-        spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
-    elif msg.split()[0] == 'help':
-        response = help()
-        spark_msg = response
-    else:
-        response = buildEmail(message, message_text)
-        spark_msg = response
+        print(msg)
 
 
-    room = Room(attributes={'id':message.roomId})
-    room.send_message(session, spark_msg)
+        if msg.split()[0] == '-version':
+            response = version
+            spark_msg = version
+        elif msg.split()[0] == '-email':
+            response = buildEmail(message, message_text)
+            spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
+        elif msg.split()[0] == 'help':
+            response = help()
+            spark_msg = response
+        else:
+            response = buildEmail(message, message_text)
+            spark_msg = response
 
+        room = Room(attributes={'id':message.roomId})
+        room.send_message(session, spark_msg)
+
+    response = "Ignore message, sent from myself"
 
     return(response)
 
