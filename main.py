@@ -15,7 +15,7 @@ import os
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.2'
+version = '0.2b'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -163,14 +163,14 @@ def buildEmail(message, message_text):
     content = getContent(message_text)
     recipients = getRecipients(message)
 
-    response = 'Email sent:\n' \
-               'to:{2}\n' \
-               'subject "{0}"\n' \
-               'content "{1}"'.format(subject, content, recipients)
 
     if content != None:
         print("Content Found - Sending email")
         sendEmail(subject, content, recipients)
+        response = 'Email sent:\n' \
+                   'to:{2}\n' \
+                   'subject "{0}"\n' \
+                   'content "{1}"'.format(subject, content, recipients)
     else:
         print("Error - User - empty content")
         response = 'You must specify content\n\n' + help()
@@ -197,8 +197,11 @@ def injest():
     elif msg.split()[0] == '-email':
         response = buildEmail(message, message_text)
         spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
-    else:
+    elif msg.split()[] == 'help':
         response = help()
+        spark_msg = response
+    else:
+        response = buildEmail(message, message_text)
         spark_msg = response
 
 
