@@ -6,7 +6,6 @@ app = Flask(__name__)
 from spark.session import Session
 from spark.messages import Message
 from spark.rooms import Room
-from spark.people import Person
 import requests
 import json
 import os
@@ -16,7 +15,7 @@ import os
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.2b'
+version = '0.3'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -186,8 +185,8 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text):
-    sender = getSender(message.attributes['personId'])
+def buildEmail(message, message_text, senderId):
+    sender = getSender(senderId)
     subject = getSubject(message_text, message)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text)
     recipients = getRecipients(message)
@@ -217,6 +216,7 @@ def injest():
 
     message = Message.get(session, message_id)
     sender = message.attributes['personId']
+    print(sender)
     if sender != myid:
         room = Room(attributes={'id':message.roomId})
         room.send_message(session, "Recieved message. Standby, processing email.")
@@ -233,13 +233,13 @@ def injest():
             response = version
             spark_msg = version
         elif msg.split()[0] == '-email':
-            response = buildEmail(message, msg)
+            response = buildEmail(message, msg, sender)
             spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
         elif msg.split()[0] == 'help':
             response = help()
             spark_msg = response
         else:
-            response = buildEmail(message, msg)
+            response = buildEmail(message, msg, sender)
             spark_msg = "Email Sent"
 
         room = Room(attributes={'id':message.roomId})
