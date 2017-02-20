@@ -81,32 +81,32 @@ def getRoomName(roomId):
 
 def getSubject(message_text, message):
 
-    mgs = message_text.split('-')
-    for i in mgs:
-        if i.split()[0] == 'subject':
-            print(i)
-            begin = i.index('\'') + 1
-            end = i.rfind('\'')
-            subject = i[begin:end]
-            break
-    if 'subject' not in locals():
-        print(message.roomId)
-        subject = "Message from Spark Room {}".format(getRoomName(message.roomId))
+    # mgs = message_text.split('-')
+    # for i in mgs:
+    #     if i.split()[0] == 'subject':
+    #         print(i)
+    #         begin = i.index('\'') + 1
+    #         end = i.rfind('\'')
+    #         subject = i[begin:end]
+    #         break
+    # if 'subject' not in locals():
+    #     print(message.roomId)
+    subject = "Message from Spark Room {}".format(getRoomName(message.roomId))
 
     return subject
 
 def getContent(message_text):
 
-    mgs = message_text.split('-')
-    for i in mgs:
-        if i.split()[0] == 'content':
-            print(i)
-            begin = i.index('\'') + 1
-            end = i.rfind('\'')
-            content = i[begin:end]
-            break
-        else:
-            content = message_text
+    # mgs = message_text.split('-')
+    # for i in mgs:
+    #     if i.split()[0] == 'content':
+    #         print(i)
+    #         begin = i.index('\'') + 1
+    #         end = i.rfind('\'')
+    #         content = i[begin:end]
+    #         break
+    #     else:
+    content = message_text
 
     return content
 
