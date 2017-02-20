@@ -29,6 +29,10 @@ mg_url = 'https://api.mailgun.net/v3/{0}/messages'.format(domain)
 
 email_from = os.environ['MG_EMAIL']
 
+
+support_email = os.environ['SPARKMAIL_SUPPORT_EMAIL']
+support_link = os.environ['SPARKMAIL_SUPPORT_LINK']
+
 def whoAmI(auth, token):
     url = 'https://api.ciscospark.com/v1/people/me'
     headers = {'content-type':'applicaiton/json', 'authorization':auth}
@@ -87,7 +91,7 @@ def getSubject(message_text, message):
             break
     if 'subject' not in locals():
         print(message.roomId)
-        subject = "From Spark Room {}".format(getRoomName(message.roomId))
+        subject = "Message from Spark Room {}".format(getRoomName(message.roomId))
 
     return subject
 
@@ -108,7 +112,7 @@ def getContent(message_text):
 
 def getUsers(roomId):
     url = "https://api.ciscospark.com/v1/memberships"
-    querystring = {"roomId": roomId}
+    querystring = {"roomId": roomId, "max": "1000"}
 
     headers = {
         'authorization': auth,
@@ -122,7 +126,6 @@ def getUsers(roomId):
     for user in users:
         ##Ignore monitor bots
         if user[u'isMonitor'] == False:
-            # user_list.append(str(user['personId']))
             if user['personEmail'].split('@')[1] != "sparkbot.io":
                 user_list.append(user['personEmail'])
     return user_list
@@ -144,8 +147,8 @@ def sendEmail(subject, content, recipients):
         'text': content
     })
 
-    print(response)
-    return
+    print("Mailgun response " + response.text)
+    return response.status_code
 
 # def sendGmail(subject, content, recipients):
 #     sender = gmail_sender
@@ -172,18 +175,23 @@ def sendEmail(subject, content, recipients):
 #     return
 
 def buildEmail(message, message_text):
-    subject = getSubject(message_text, message)
+    #subject = getSubject(message_text, message)
     content = getContent(message_text)
     recipients = getRecipients(message)
 
 
     if content != None:
         print("Content Found - Sending email")
-        sendEmail(subject, content, recipients)
-        response = 'Email sent:\n' \
-                   'to:{2}\n' \
-                   'subject "{0}"\n' \
-                   'content "{1}"'.format(subject, content, recipients)
+        sendmail_status = sendEmail(subject, content, recipients)
+        if sendmail_status >= 200 <= 300:
+            response = 'Email sent:\n' \
+                       'to:{2}\n' \
+                       'subject "{0}"\n' \
+                       'content "{1}"'.format(subject, content, recipients)
+        else:
+            response = "Failed to send email.  Please contact the following for support:\n" \
+                       "{0}\n" \
+                       "or {1}\n".format(support_email, support_link)
     else:
         print("Error - User - empty content")
         response = 'You must specify content\n\n' + help()
@@ -197,6 +205,8 @@ def injest():
     message = Message.get(session, message_id)
     sender = message.attributes['personId']
     if sender != myid:
+        room = Room(attributes={'id':message.roomId})
+        room.send_message(session, "Recieved message. Standby, processing email.")
         message_text = message.attributes['text']
 
         msg = message_text.split(name)
