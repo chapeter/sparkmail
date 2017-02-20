@@ -175,7 +175,7 @@ def sendEmail(subject, content, recipients):
 #     return
 
 def buildEmail(message, message_text):
-    #subject = getSubject(message_text, message)
+    subject = getSubject(message_text, message)
     content = getContent(message_text)
     recipients = getRecipients(message)
 
@@ -232,7 +232,8 @@ def injest():
         room = Room(attributes={'id':message.roomId})
         room.send_message(session, spark_msg)
 
-    response = "Ignore message, sent from myself"
+    else:
+        response = "Ignore message, sent from myself"
 
     return(response)
 
