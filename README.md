@@ -14,6 +14,8 @@ sparkmail was written to work with Mailgun.  Create an account there if you don'
     * MG_KEY
     * MG_DOMAIN
     * MG_EMAIL
+    * SPARKMAIL_SUPPORT_EMAIL
+    * SPARKMAIL_SUPPORT_LINK
 * Install needed packages: ```pip install -r requirements.txt```
 * ```python main.py```
 
