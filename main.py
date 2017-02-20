@@ -216,6 +216,7 @@ def injest():
 
     message = Message.get(session, message_id)
     sender = message.attributes['personId']
+    print(message.attributes)
     print(sender)
     if sender != myid:
         room = Room(attributes={'id':message.roomId})
