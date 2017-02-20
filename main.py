@@ -6,6 +6,7 @@ app = Flask(__name__)
 from spark.session import Session
 from spark.messages import Message
 from spark.rooms import Room
+from spark.people import Person
 import requests
 import json
 import os
@@ -173,10 +174,22 @@ def sendEmail(subject, content, recipients):
 #
 #     print("sent via gmail")
 #     return
+def getSender(personId):
+    url = "https://api.ciscospark.com/v1/people/{}".format(personId)
+
+    headers = {
+        'authorization': auth,
+        'content-type': 'application/json'
+    }
+    response = requests.request("GET", url, headers=headers)
+    user = json.loads(response.content)
+
+    return user['displayName']
 
 def buildEmail(message, message_text):
+    sender = getSender(message.attributes['personId'])
     subject = getSubject(message_text, message)
-    content = getContent(message_text)
+    content = "Message from {}:\n\n".format(sender) + getContent(message_text)
     recipients = getRecipients(message)
 
 
