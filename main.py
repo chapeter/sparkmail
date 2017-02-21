@@ -1,14 +1,15 @@
 from flask import Flask
 from flask import request
-
-app = Flask(__name__)
-
 from spark.session import Session
 from spark.messages import Message
 from spark.rooms import Room
 import requests
 import json
 import os
+
+app = Flask(__name__)
+
+
 
 # #Below needed for GMAIL
 # import smtplib
@@ -221,30 +222,42 @@ def injest():
     if sender != myid:
         room = Room(attributes={'id':message.roomId})
         room.send_message(session, "Recieved message. Standby, processing email.")
-        message_text = message.attributes['text']
 
-        msg = message_text.split(name)
-        print("removing {} from message".format(name))
-        msg = msg[1].strip()
+        #Check to see if there are more than 50 members in a room.  If so do not send the message
+        member_count = len(getUsers(message.roomId))
 
-        print(msg)
+        if member_count > 50:
+
+            message_text = message.attributes['text']
+
+            msg = message_text.split(name)
+            print("removing {} from message".format(name))
+            msg = msg[1].strip()
+
+            print(msg)
 
 
-        if msg.split()[0] == '-version':
-            response = version
-            spark_msg = version
-        elif msg.split()[0] == '-email':
-            response = buildEmail(message, msg, sender)
-            spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
-        elif msg.split()[0] == 'help':
-            response = help()
-            spark_msg = response
+            if msg.split()[0] == '-version':
+                response = version
+                spark_msg = version
+            elif msg.split()[0] == '-email':
+                response = buildEmail(message, msg, sender)
+                spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
+            elif msg.split()[0] == 'help':
+                response = help()
+                spark_msg = response
+            else:
+                response = buildEmail(message, msg, sender)
+                spark_msg = "Email Sent"
+
+            room.send_message(session, spark_msg)
+
         else:
-            response = buildEmail(message, msg, sender)
-            spark_msg = "Email Sent"
-
-        room = Room(attributes={'id':message.roomId})
-        room.send_message(session, spark_msg)
+            room_too_large_message = "I cannot create an email for you.  To help prevent SPAM I am limited to " \
+                                     "only sending Emails with rooms that have no more than 50 users.  If you" \
+                                     "would like to see this increased please file an issue at {} or reach out" \
+                                     "to {}".format(support_link, support_email)
+            room.send_message(session, room_too_large_message)
 
     else:
         response = "Ignore message, sent from myself"
