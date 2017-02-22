@@ -196,7 +196,7 @@ def buildEmail(message, message_text, senderId):
     if content != None:
         print("Content Found - Sending email")
         sendmail_status = sendEmail(subject, content, recipients)
-        if sendmail_status >= 200 <= 300:
+        if sendmail_status >= 200 < 300:
             response = 'Email sent:\n' \
                        'to:{2}\n' \
                        'subject "{0}"\n' \
