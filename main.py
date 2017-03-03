@@ -226,7 +226,7 @@ def injest():
         #Check to see if there are more than 50 members in a room.  If so do not send the message
         member_count = len(getUsers(message.roomId))
 
-        if member_count < 50:
+        if member_count <= 500:
 
             message_text = message.attributes['text']
 
@@ -254,7 +254,7 @@ def injest():
 
         else:
             room_too_large_message = "I cannot create an email for you.  To help prevent SPAM I am limited to " \
-                                     "only sending Emails with rooms that have no more than 50 users.  If you" \
+                                     "only sending Emails with rooms that have no more than 500 users.  If you" \
                                      "would like to see this increased please file an issue at {} or reach out" \
                                      "to {}".format(support_link, support_email)
             room.send_message(session, room_too_large_message)
