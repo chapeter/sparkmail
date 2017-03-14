@@ -17,7 +17,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.3'
+version = '0.4'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -232,8 +232,9 @@ def injest():
             message_text = message.attributes['text']
 
             msg = message_text.split(name)
-            print("removing {} from message".format(name))
-            sys.stderr.write(msg)
+            sys.stderr.write("removing {} from message".format(name))
+            for m in msg:
+                sys.stderr.write("{0} - {1}".format(m,msg[m]))
             msg = msg[1].strip()
             sys.stderr.write(msg)
             print(msg)
