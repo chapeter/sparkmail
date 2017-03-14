@@ -6,6 +6,7 @@ from spark.rooms import Room
 import requests
 import json
 import os
+import sys
 
 app = Flask(__name__)
 
@@ -232,9 +233,12 @@ def injest():
 
             msg = message_text.split(name)
             print("removing {} from message".format(name))
+            sys.stderr.write(msg)
             msg = msg[1].strip()
-
+            sys.stderr.write(msg)
             print(msg)
+            
+            
 
 
             if msg.split()[0] == '-version':
