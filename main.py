@@ -233,8 +233,10 @@ def injest():
 
             msg = message_text.split(name)
             sys.stderr.write("removing {} from message".format(name))
+            x=0
             for m in msg:
-                sys.stderr.write("{0} - {1}".format(m,msg[m]))
+                sys.stderr.write("{0} - {1}".format(x,m))
+                x=x+1
             msg = msg[1].strip()
             sys.stderr.write(msg)
             print(msg)
