@@ -6,6 +6,7 @@ from spark.rooms import Room
 import requests
 import json
 import os
+import sys
 
 app = Flask(__name__)
 
@@ -16,7 +17,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.3'
+version = '0.4.2'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -231,24 +232,26 @@ def injest():
             message_text = message.attributes['text']
 
             msg = message_text.split(name)
-            print("removing {} from message".format(name))
+            sys.stderr.write("\nremoving {} from message\n".format(name))
             msg = msg[1].strip()
+            sys.stderr.write("\nMessage is - {}\n".format(msg))
 
-            print(msg)
-
-
-            if msg.split()[0] == '-version':
-                response = version
-                spark_msg = version
-            elif msg.split()[0] == '-email':
-                response = buildEmail(message, msg, sender)
-                spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
-            elif msg.split()[0] == 'help':
-                response = help()
-                spark_msg = response
+            if len(msg) < 1:
+                sys.stderr.write("\nMessage is empty\n")
+                spark_msg = "Please type a message to be sent"
             else:
-                response = buildEmail(message, msg, sender)
-                spark_msg = "Email Sent"
+                if msg.split()[0] == '-version':
+                    response = version
+                    spark_msg = version
+                elif msg.split()[0] == '-email':
+                    response = buildEmail(message, msg, sender)
+                    spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
+                elif msg.split()[0] == 'help':
+                    response = help()
+                    spark_msg = response
+                else:
+                    response = buildEmail(message, msg, sender)
+                    spark_msg = "Email Sent"
 
             room.send_message(session, spark_msg)
 
