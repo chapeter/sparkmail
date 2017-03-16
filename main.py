@@ -17,7 +17,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.4.2'
+version = '0.4.4'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -64,7 +64,7 @@ name = whoAmI(auth, token)
 myid = myID(auth, token)
 
 def help():
-    response = "Just message me and I will send the content of that message via email to all members of the room"
+    response = "Hellow, I'm {0} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \n\nE.G: @{1} Send this message via email!".format(name, name)
 
     return response
 
@@ -93,7 +93,7 @@ def getSubject(message_text, message):
     #         break
     # if 'subject' not in locals():
     #     print(message.roomId)
-    subject = "Message from Spark Room {}".format(getRoomName(message.roomId))
+    subject = "Message from Spark Space {}".format(getRoomName(message.roomId))
 
     return subject
 
@@ -211,6 +211,10 @@ def buildEmail(message, message_text, senderId):
         response = 'You must specify content\n\n' + help()
     return response
 
+def received():
+    response = "Recieved message. Standby."
+    return response
+
 @app.route("/api/injest", methods=['POST'])
 def injest():
     data = request.get_json()
@@ -222,7 +226,8 @@ def injest():
     print(sender)
     if sender != myid:
         room = Room(attributes={'id':message.roomId})
-        room.send_message(session, "Recieved message. Standby, processing email.")
+        
+        #room.send_message(session, "Received message. Standby.")
 
         #Check to see if there are more than 50 members in a room.  If so do not send the message
         member_count = len(getUsers(message.roomId))
@@ -238,18 +243,20 @@ def injest():
 
             if len(msg) < 1:
                 sys.stderr.write("\nMessage is empty\n")
-                spark_msg = "Please type a message to be sent"
+                spark_msg = "Please type a message to be sent via email"
             else:
                 if msg.split()[0] == '-version':
                     response = version
                     spark_msg = version
                 elif msg.split()[0] == '-email':
+                    room.send_message(session, received())
                     response = buildEmail(message, msg, sender)
                     spark_msg = response + "\nYou no longer need to tag messages with -email, just speak to me"
                 elif msg.split()[0] == 'help':
                     response = help()
                     spark_msg = response
                 else:
+                    room.send_message(session, received())
                     response = buildEmail(message, msg, sender)
                     spark_msg = "Email Sent"
 
