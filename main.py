@@ -17,7 +17,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.4.2'
+version = '0.4.3'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -64,7 +64,7 @@ name = whoAmI(auth, token)
 myid = myID(auth, token)
 
 def help():
-    response = "Hellow, I'm {} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \nE.G: @sparkmail Send this message via email!"
+    response = "Hellow, I'm {} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \nE.G: @sparkmail Send this message via email!".format(name)
 
     return response
 
