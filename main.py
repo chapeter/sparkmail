@@ -243,7 +243,7 @@ def injest():
 
             if len(msg) < 1:
                 sys.stderr.write("\nMessage is empty\n")
-                spark_msg = "Please type a message to be sent"
+                spark_msg = "Please type a message to be sent via email"
             else:
                 if msg.split()[0] == '-version':
                     response = version
