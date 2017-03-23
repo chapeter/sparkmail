@@ -212,7 +212,7 @@ def buildEmail(message, message_text, senderId):
     return response
 
 def received():
-    response = "Recieved message. Standby."
+    response = "Received message. Standby."
     return response
 
 @app.route("/api/injest", methods=['POST'])
