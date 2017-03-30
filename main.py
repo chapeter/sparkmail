@@ -83,8 +83,8 @@ def getRoomName(roomId):
 
 def getRoomURL(roomId):
     basedecode = base64.b64decode(roomId)
-    sys.stderr.write(basedecode)
-    roomurl = basedecode.split('/')[-1]
+    sys.stderr.write(basedecode.decode('utf-8'))
+    roomurl = basedecode.decode('utf-8').split('/')[-1]
     return roomurl
 
 
