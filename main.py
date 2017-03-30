@@ -101,8 +101,9 @@ def getSubject(message_text, message):
     #         break
     # if 'subject' not in locals():
     #     print(message.roomId)
-    subject = "Message from Spark Space {}".format(getRoomName(message.roomId))
-
+    #subject = "Message from Spark Space {}".format(getRoomName(message.roomId))
+    subject = getRoomName(message.roomId)
+    
     return subject
 
 def getContent(message_text):
@@ -217,7 +218,8 @@ def buildEmail(message, message_text, senderId, roomId):
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
-    content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
+    #content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
+    content = getContent(message_text) + footer
     recipients = getRecipients(message)
 
 
