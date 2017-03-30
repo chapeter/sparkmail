@@ -7,6 +7,7 @@ import requests
 import json
 import os
 import sys
+import base64
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.4.4'
+version = '0.5'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -80,6 +81,13 @@ def getRoomName(roomId):
     room = json.loads(response.content)
     return room['title']
 
+def getRoomURL(roomId):
+    basedecode = base64.b64decode(roomId)
+    sys.stderr.write(basedecode.decode('utf-8'))
+    roomurl = basedecode.decode('utf-8').split('/')[-1]
+    fullurl = "https://web.ciscospark.com/rooms/{}/chat".format(roomurl)
+    return fullurl
+
 
 def getSubject(message_text, message):
 
@@ -137,6 +145,8 @@ def getRecipients(message):
     users = getUsers(roomid)
     return users
 
+
+
 def sendEmail(subject, content, recipients):
 
     response = requests.post(
@@ -187,10 +197,12 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId):
+def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
-    content = "Message from {}:\n\n".format(sender) + getContent(message_text)
+    roomurl = getRoomURL(roomId)
+    footer = "\n\nContinue the conversation on spark {}".format(roomurl)
+    content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
     recipients = getRecipients(message)
 
 
@@ -257,7 +269,7 @@ def injest():
                     spark_msg = response
                 else:
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender)
+                    response = buildEmail(message, msg, sender, message.roomId)
                     spark_msg = "Email Sent"
 
             room.send_message(session, spark_msg)
