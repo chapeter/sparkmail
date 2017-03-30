@@ -80,6 +80,11 @@ def getRoomName(roomId):
     room = json.loads(response.content)
     return room['title']
 
+def getRoomURL(roomId):
+    basedecode = base64.b64decode(roomId)
+    roomurl = basedecode.split('/')[-1]
+    return roomurl
+
 
 def getSubject(message_text, message):
 
@@ -137,6 +142,8 @@ def getRecipients(message):
     users = getUsers(roomid)
     return users
 
+
+
 def sendEmail(subject, content, recipients):
 
     response = requests.post(
@@ -187,10 +194,12 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId):
+def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
-    content = "Message from {}:\n\n".format(sender) + getContent(message_text)
+    roomurl = getRoomURL(roomId)
+    fotter = "\n\nContinue the conversation on spark {}".format(roomurl)
+    content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
     recipients = getRecipients(message)
 
 
@@ -257,7 +266,7 @@ def injest():
                     spark_msg = response
                 else:
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender)
+                    response = buildEmail(message, msg, sender, roomId)
                     spark_msg = "Email Sent"
 
             room.send_message(session, spark_msg)
