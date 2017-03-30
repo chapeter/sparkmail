@@ -147,15 +147,17 @@ def getRecipients(message):
 
 
 
-def sendEmail(subject, content, recipients):
+def sendEmail(subject, content, recipients, senderId):
 
+    sender_name = getSender(senderId)
+    sender_email = getSenderEmail(senderId)
     response = requests.post(
         mg_url,
         auth=('api', mg_key),
         data={
         'sender': email_from,
-        'from': 'chapeter@cisco.com',
-        'h:Reply-To': "Chad Peterson <chapeter@cisco.com>",
+        'from': sender_email,
+        'h:Reply-To': "{0} <{1}>".format(sender_name, sender_email),
         'to': recipients,
         'subject': subject,
         'text': content
@@ -189,7 +191,6 @@ def sendEmail(subject, content, recipients):
 #     return
 def getSender(personId):
     url = "https://api.ciscospark.com/v1/people/{}".format(personId)
-
     headers = {
         'authorization': auth,
         'content-type': 'application/json'
@@ -198,6 +199,18 @@ def getSender(personId):
     user = json.loads(response.content)
 
     return user['displayName']
+
+def getSenderEmail(personId):
+    url = "https://api.ciscospark.com/v1/people/{}".format(personId)
+
+    headers = {
+        'authorization': auth,
+        'content-type': 'application/json'
+    }
+    response = requests.request("GET", url, headers=headers)
+    user = json.loads(response.content)
+
+    return user['personEmail']
 
 def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
@@ -210,7 +223,7 @@ def buildEmail(message, message_text, senderId, roomId):
 
     if content != None:
         print("Content Found - Sending email")
-        sendmail_status = sendEmail(subject, content, recipients)
+        sendmail_status = sendEmail(subject, content, recipients, senderId)
         if sendmail_status >= 200 < 300:
             response = 'Email sent:\n' \
                        'to:{2}\n' \
