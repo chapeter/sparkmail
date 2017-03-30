@@ -210,7 +210,7 @@ def getSenderEmail(personId):
     response = requests.request("GET", url, headers=headers)
     user = json.loads(response.content)
 
-    return user['personEmail']
+    return user['email']
 
 def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
