@@ -153,8 +153,8 @@ def sendEmail(subject, content, recipients):
         mg_url,
         auth=('api', mg_key),
         data={
-        'from': email_from,
-        'sender': 'chapeter@cisco.com',
+        'sender': email_from,
+        'from': 'chapeter@cisco.com',
         'to': recipients,
         'subject': subject,
         'text': content
