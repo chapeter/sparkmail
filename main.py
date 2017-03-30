@@ -155,6 +155,7 @@ def sendEmail(subject, content, recipients):
         data={
         'sender': email_from,
         'from': 'chapeter@cisco.com',
+        'h:Reply-To': "Chad Peterson <chapeter@cisco.com>",
         'to': recipients,
         'subject': subject,
         'text': content
