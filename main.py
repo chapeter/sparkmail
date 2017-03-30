@@ -217,7 +217,7 @@ def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
-    footer = "\n\nContinue the conversation on spark {}".format(roomurl)
+    footer = "\n\n\n\nContinue the conversation on spark {}".format(roomurl)
     #content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
     content = getContent(message_text) + footer
     recipients = getRecipients(message)
