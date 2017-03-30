@@ -7,6 +7,7 @@ import requests
 import json
 import os
 import sys
+import base64
 
 app = Flask(__name__)
 
