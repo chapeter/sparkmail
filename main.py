@@ -85,7 +85,8 @@ def getRoomURL(roomId):
     basedecode = base64.b64decode(roomId)
     sys.stderr.write(basedecode.decode('utf-8'))
     roomurl = basedecode.decode('utf-8').split('/')[-1]
-    return roomurl
+    fullurl = "https://web.ciscospark.com/rooms/{}/chat".format(roomurl)
+    return fullurl
 
 
 def getSubject(message_text, message):
@@ -200,7 +201,7 @@ def buildEmail(message, message_text, senderId, roomId):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
-    fotter = "\n\nContinue the conversation on spark {}".format(roomurl)
+    footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
     recipients = getRecipients(message)
 
