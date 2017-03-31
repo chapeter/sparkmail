@@ -154,7 +154,7 @@ def sendEmail(subject, content, recipients, senderId):
     #debugging
     sys.stderr.write("\nsender_name: {}\n".format(sender_name))
     sys.stderr.write("\nsender_email: {}\n".format(sender_email))
-    sys.stderr.write("\email_from: {}\n".format(sender_email))
+    sys.stderr.write("\email_from: {}\n".format(email_from))
     response = requests.post(
         mg_url,
         auth=('api', mg_key),
