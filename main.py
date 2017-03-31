@@ -149,9 +149,12 @@ def getRecipients(message):
 
 
 def sendEmail(subject, content, recipients, senderId):
-
     sender_name = getSender(senderId)
     sender_email = getSenderEmail(senderId)
+    #debugging
+    sys.stderr.write("\nsender_name: {}\n".format(sender_name))
+    sys.stderr.write("\nsender_email: {}\n".format(sender_email))
+    sys.stderr.write("\email_from: {}\n".format(sender_email))
     response = requests.post(
         mg_url,
         auth=('api', mg_key),
