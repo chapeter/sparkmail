@@ -250,7 +250,7 @@ def injest():
         if member_count <= 500:
 
             message_text = message.attributes['text']
-            message_md = message.attributes['md']
+            message_md = message.attributes['markdown']
 
             msg = message_text.split(name)
             msg_md = message_md.split(name)
