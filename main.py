@@ -8,6 +8,7 @@ import json
 import os
 import sys
 import base64
+import markdown2
 
 app = Flask(__name__)
 
@@ -147,7 +148,7 @@ def getRecipients(message):
 
 
 
-def sendEmail(subject, content, recipients):
+def sendEmail(subject, content, html_content, recipients):
 
     response = requests.post(
         mg_url,
@@ -156,7 +157,8 @@ def sendEmail(subject, content, recipients):
         'from': email_from,
         'to': recipients,
         'subject': subject,
-        'text': content
+        'text': content,
+        'html': html_content
     })
 
     print("Mailgun response " + response.text)
@@ -197,18 +199,19 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId, roomId):
+def buildEmail(message, message_text, message_md, senderId, roomId):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
+    html_content = "<h1>Message from {0}:</h1><br><br>{1}<br><br>{2}".format(sender, markdown2.markdown(message_md),footer)
     recipients = getRecipients(message)
 
 
     if content != None:
         print("Content Found - Sending email")
-        sendmail_status = sendEmail(subject, content, recipients)
+        sendmail_status = sendEmail(subject, content, html_content, recipients)
         if sendmail_status >= 200 < 300:
             response = 'Email sent:\n' \
                        'to:{2}\n' \
@@ -247,10 +250,13 @@ def injest():
         if member_count <= 500:
 
             message_text = message.attributes['text']
+            message_md = message.attributes['md']
 
             msg = message_text.split(name)
+            msg_md = message_md.split(name)
             sys.stderr.write("\nremoving {} from message\n".format(name))
             msg = msg[1].strip()
+            msg_md = msg_md[1].strip()
             sys.stderr.write("\nMessage is - {}\n".format(msg))
 
             if len(msg) < 1:
@@ -269,7 +275,7 @@ def injest():
                     spark_msg = response
                 else:
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender, message.roomId)
+                    response = buildEmail(message, msg, msg_md, sender, message.roomId)
                     spark_msg = "Email Sent"
 
             room.send_message(session, spark_msg)
