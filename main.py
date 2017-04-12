@@ -65,7 +65,7 @@ name = whoAmI(auth, token)
 myid = myID(auth, token)
 
 def help():
-    response = "Hello, I'm {0} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \n\nE.G: @{1} Send this message via email!".format(name, name)
+    response = "IMAPEX is Awesome!"
 
     return response
 
