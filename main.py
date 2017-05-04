@@ -147,7 +147,7 @@ def getRecipients(message):
 
 
 
-def sendEmail(subject, content, recipients):
+def sendEmail(subject, content, recipients, roomId):
 
     response = requests.post(
         mg_url,
@@ -156,7 +156,8 @@ def sendEmail(subject, content, recipients):
         'from': email_from,
         'to': recipients,
         'subject': subject,
-        'text': content
+        'text': content,
+        'X-Mailgun-Tag': roomId
     })
 
     print("Mailgun response " + response.text)
@@ -208,7 +209,7 @@ def buildEmail(message, message_text, senderId, roomId):
 
     if content != None:
         print("Content Found - Sending email")
-        sendmail_status = sendEmail(subject, content, recipients)
+        sendmail_status = sendEmail(subject, content, recipients, roomId)
         if sendmail_status >= 200 < 300:
             response = 'Email sent:\n' \
                        'to:{2}\n' \
