@@ -148,11 +148,24 @@ def getUsers(roomId):
                 user_list.append(user['personEmail'])
     return user_list
 
-def getRecipients(message):
+def getRecipients(message, excludelist):
     roomid = message.roomId
     users = getUsers(roomid)
+    for useraddress in users:
+        for domain in excludelist:
+            if domain in useraddress:
+                users.remove(user)
     return users
 
+def getExcludelist(message_text)
+    excludelist = []
+    if "/exclude" in message_text:
+        raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
+        for item in raw_list:
+            if "." in item:
+                excludelist.append(item)
+    
+    return excludelist
 
 
 def sendEmail(subject, content, recipients):
@@ -211,8 +224,10 @@ def buildEmail(message, message_text, senderId, roomId):
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
+    excludelist = []
+    excludelist = getExcludelist(message_text)
     #I'm thinking of adding exclude list here
-    recipients = getRecipients(message)
+    recipients = getRecipients(message, excludelist)
 
 
     if content != None:
