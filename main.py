@@ -18,7 +18,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.5'
+version = '0.6'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -35,6 +35,12 @@ email_from = os.environ['MG_EMAIL']
 
 support_email = os.environ['SPARKMAIL_SUPPORT_EMAIL']
 support_link = os.environ['SPARKMAIL_SUPPORT_LINK']
+
+
+commands = {
+    "/exclude": "Exclude an email address or domain. ex: /exclude(@cisco.com)",
+}
+
 
 def whoAmI(auth, token):
     url = 'https://api.ciscospark.com/v1/people/me'
@@ -66,7 +72,9 @@ myid = myID(auth, token)
 
 def help():
     response = "Hello, I'm {0} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \n\nE.G: @{1} Send this message via email!".format(name, name)
-
+    for c in commands:
+        response = response + "\n I also understand the command {0}: {1}".format(c[0], c[1])
+    
     return response
 
 def getRoomName(roomId):
@@ -203,6 +211,7 @@ def buildEmail(message, message_text, senderId, roomId):
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
+    #I'm thinking of adding exclude list here
     recipients = getRecipients(message)
 
 
