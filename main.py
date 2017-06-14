@@ -157,13 +157,17 @@ def getUsers(roomId):
 def getRecipients(message, excludelist):
     roomid = message.roomId
     users = getUsers(roomid)
+    sys.stderr.write("Inside getRecipients: User List\n----\n")
+    for user in users:
+        sys.stderr.write(user + "\n")
     for useraddress in users:
         sys.stderr.write("\nLooking at {}'s address\n".format(useraddress))
         for domain in excludelist:
             sys.stderr.write("Looking for {0} in {1}'s address\n".format(domain, useraddress))
             if domain in useraddress:
-                sys.stderr.write("Found {0} in {1}\n".format(domain, useraddress))
+                sys.stderr.write("Found {0} in {1}.  Removing it from list.\n".format(domain, useraddress))
                 users.remove(useraddress)
+                sys.stderr.write("Removed")
             else:
                 sys.stderr.write("Did not find {0} in {1}\n".format(domain,useraddress))
     return users
