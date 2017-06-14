@@ -150,7 +150,7 @@ def getUsers(roomId):
             if user['personEmail'].split('@')[1] != "sparkbot.io":
                 user_list.append(user['personEmail'])
     sys.stderr.write("User List\n----\n")
-    for user in users:
+    for user in user_list:
         sys.stderr.write(user + "\n")
     return user_list
 
