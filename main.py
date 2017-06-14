@@ -18,7 +18,7 @@ app = Flask(__name__)
 # from email.mime.text import MIMEText
 # from email.mime.multipart import MIMEMultipart
 
-version = '0.5'
+version = '0.6'
 
 token = os.environ['SPARK_BOT_TOKEN']
 url = 'https://api.ciscospark.com'
@@ -36,6 +36,9 @@ email_from = os.environ['MG_EMAIL']
 support_email = os.environ['SPARKMAIL_SUPPORT_EMAIL']
 support_link = os.environ['SPARKMAIL_SUPPORT_LINK']
 
+
+
+
 def whoAmI(auth, token):
     url = 'https://api.ciscospark.com/v1/people/me'
     headers = {'content-type':'applicaiton/json', 'authorization':auth}
@@ -47,6 +50,8 @@ def whoAmI(auth, token):
     name = me['displayName'].split()[0]
     print("I am {}".format(name))
     return name
+
+
 
 def myID(auth, token):
     url = 'https://api.ciscospark.com/v1/people/me'
@@ -64,9 +69,15 @@ def myID(auth, token):
 name = whoAmI(auth, token)
 myid = myID(auth, token)
 
+commands = {
+    "/exclude": "Exclude an email domain. ex: {} /exclude(@cisco.com) Message".format(name),
+}
+
 def help():
     response = "Hello, I'm {0} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \n\nE.G: @{1} Send this message via email!".format(name, name)
-
+    for c in commands:
+        response = response + "\n I also understand the command {0}: {1} ".format(c, commands[c])
+    
     return response
 
 def getRoomName(roomId):
@@ -140,11 +151,24 @@ def getUsers(roomId):
                 user_list.append(user['personEmail'])
     return user_list
 
-def getRecipients(message):
+def getRecipients(message, excludelist):
     roomid = message.roomId
     users = getUsers(roomid)
+    for useraddress in users:
+        for domain in excludelist:
+            if domain in useraddress:
+                users.remove(useraddress)
     return users
 
+def getExcludelist(message_text):
+    excludelist = []
+    if "/exclude" in message_text:
+        raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
+        for item in raw_list:
+            if "." in item:
+                excludelist.append(item)
+    
+    return excludelist
 
 
 def sendEmail(subject, content, recipients):
@@ -203,7 +227,10 @@ def buildEmail(message, message_text, senderId, roomId):
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
-    recipients = getRecipients(message)
+    excludelist = []
+    excludelist = getExcludelist(message_text)
+    #I'm thinking of adding exclude list here
+    recipients = getRecipients(message, excludelist)
 
 
     if content != None:
@@ -226,6 +253,10 @@ def buildEmail(message, message_text, senderId, roomId):
 def received():
     response = "Received message. Standby."
     return response
+
+def removeCMD(msg, option):
+    
+    return msg.split(")",1)[1].strip()
 
 @app.route("/api/injest", methods=['POST'])
 def injest():
@@ -267,6 +298,11 @@ def injest():
                 elif msg.split()[0] == 'help':
                     response = help()
                     spark_msg = response
+                elif '/exclude' in msg.split()[0]:
+                    msg = removeCMD(msg, '/exclude')
+                    room.send_message(session, received())
+                    response = buildEmail(message, msg, sender, message.roomId)
+                    spark_msg = "Email Sent"                    
                 else:
                     room.send_message(session, received())
                     response = buildEmail(message, msg, sender, message.roomId)
