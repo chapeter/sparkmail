@@ -166,11 +166,11 @@ def getRecipients(message, excludelist):
         for domain in excludelist:
             sys.stderr.write("Looking for {0} in {1}'s address\n".format(domain, useraddress))
             if domain in useraddress:
-                #sys.stderr.write("Found {0} in {1}.  Removing it from list.\n".format(domain, useraddress))
+                sys.stderr.write("Found {0} in {1}.  Removing it from list.\n".format(domain, useraddress))
                 #users.remove(useraddress)
                 #sys.stderr.write("Removed")
             else:
-                sys.stderr.write("Did not find {0} in {1}.  Adding it to valid list\n".format(domain,useraddress))
+                sys.stderr.write("Did not find {0} in {1}. Adding it to valid list\n".format(domain, useraddress))
                 valid_users.append(useraddress)
     return valid_users
 
