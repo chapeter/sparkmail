@@ -157,7 +157,7 @@ def getRecipients(message, excludelist):
                 users.remove(user)
     return users
 
-def getExcludelist(message_text)
+def getExcludelist(message_text):
     excludelist = []
     if "/exclude" in message_text:
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
