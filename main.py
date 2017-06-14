@@ -170,8 +170,9 @@ def getExcludelist(message_text):
     if "/exclude" in message_text:
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
         for item in raw_list:
+            sys.stderr.write("\n" + item + "\n")
             if "." in item:
-                sys.stderr.write("Found {} in exclude command".format(item))
+                sys.stderr.write("\nFound {} in exclude command\n".format(item))
                 excludelist.append(item)
     
     return excludelist
