@@ -230,7 +230,7 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId, roomId, excludelist):
+def buildEmail(message, message_text, senderId, roomId, excludelist=[]):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
@@ -309,7 +309,7 @@ def injest():
                     excludelist = getExcludelist(msg)
                     msg = removeCMD(msg, '/exclude')
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender, message.roomId)
+                    response = buildEmail(message, msg, sender, message.roomId, excludelist=excludelist)
                     spark_msg = "Email Sent"                    
                 else:
                     room.send_message(session, received())
