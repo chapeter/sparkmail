@@ -254,6 +254,10 @@ def received():
     response = "Received message. Standby."
     return response
 
+def removeCMD(msg, option):
+    
+    return msg.split(")",1)[1].strip()
+
 @app.route("/api/injest", methods=['POST'])
 def injest():
     data = request.get_json()
@@ -294,6 +298,11 @@ def injest():
                 elif msg.split()[0] == 'help':
                     response = help()
                     spark_msg = response
+                elif '/exclude' in msg.split()[0]:
+                    msg = removeCMD(msg, '/exclude')
+                    room.send_message(session, received())
+                    response = buildEmail(message, msg, sender, message.roomId)
+                    spark_msg = "Email Sent"                    
                 else:
                     room.send_message(session, received())
                     response = buildEmail(message, msg, sender, message.roomId)
