@@ -154,7 +154,7 @@ def getRecipients(message, excludelist):
     for useraddress in users:
         for domain in excludelist:
             if domain in useraddress:
-                users.remove(user)
+                users.remove(useraddress)
     return users
 
 def getExcludelist(message_text):
