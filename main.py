@@ -149,23 +149,41 @@ def getUsers(roomId):
         if user[u'isMonitor'] == False:
             if user['personEmail'].split('@')[1] != "sparkbot.io":
                 user_list.append(user['personEmail'])
+    sys.stderr.write("User List\n----\n")
+    for user in user_list:
+        sys.stderr.write(user + "\n")
     return user_list
 
 def getRecipients(message, excludelist):
     roomid = message.roomId
     users = getUsers(roomid)
+    sys.stderr.write("Inside getRecipients: User List\n----\n")
+    valid_users = []
+    for user in users:
+        sys.stderr.write(user + "\n")
     for useraddress in users:
+        sys.stderr.write("\nLooking at {}'s address\n".format(useraddress))
         for domain in excludelist:
+            sys.stderr.write("Looking for {0} in {1}'s address\n".format(domain, useraddress))
             if domain in useraddress:
-                users.remove(useraddress)
-    return users
+                sys.stderr.write("Found {0} in {1}.  Removing it from list.\n".format(domain, useraddress))
+                #users.remove(useraddress)
+                #sys.stderr.write("Removed")
+            else:
+                sys.stderr.write("Did not find {0} in {1}. Adding it to valid list\n".format(domain, useraddress))
+                valid_users.append(useraddress)
+    return valid_users
 
 def getExcludelist(message_text):
     excludelist = []
+    sys.stderr.write("Running in getExcludelist")
+    sys.stderr.write(message_text)
     if "/exclude" in message_text:
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
         for item in raw_list:
+            sys.stderr.write("\n" + item + "\n")
             if "." in item:
+                sys.stderr.write("\nFound {} in exclude command\n".format(item))
                 excludelist.append(item)
     
     return excludelist
@@ -221,14 +239,12 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId, roomId):
+def buildEmail(message, message_text, senderId, roomId, excludelist=[]):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
-    excludelist = []
-    excludelist = getExcludelist(message_text)
     #I'm thinking of adding exclude list here
     recipients = getRecipients(message, excludelist)
 
@@ -299,9 +315,10 @@ def injest():
                     response = help()
                     spark_msg = response
                 elif '/exclude' in msg.split()[0]:
+                    excludelist = getExcludelist(msg)
                     msg = removeCMD(msg, '/exclude')
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender, message.roomId)
+                    response = buildEmail(message, msg, sender, message.roomId, excludelist=excludelist)
                     spark_msg = "Email Sent"                    
                 else:
                     room.send_message(session, received())
