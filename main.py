@@ -167,6 +167,7 @@ def getRecipients(message, excludelist):
 
 def getExcludelist(message_text):
     excludelist = []
+    sys.stderr.write(message_text)
     if "/exclude" in message_text:
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
         for item in raw_list:
