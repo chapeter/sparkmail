@@ -37,9 +37,6 @@ support_email = os.environ['SPARKMAIL_SUPPORT_EMAIL']
 support_link = os.environ['SPARKMAIL_SUPPORT_LINK']
 
 
-commands = {
-    "/exclude": "Exclude an email address or domain. ex: /exclude(@cisco.com)",
-}
 
 
 def whoAmI(auth, token):
@@ -53,6 +50,8 @@ def whoAmI(auth, token):
     name = me['displayName'].split()[0]
     print("I am {}".format(name))
     return name
+
+
 
 def myID(auth, token):
     url = 'https://api.ciscospark.com/v1/people/me'
@@ -69,6 +68,10 @@ def myID(auth, token):
 
 name = whoAmI(auth, token)
 myid = myID(auth, token)
+
+commands = {
+    "/exclude": "Exclude an email domain. ex: {} /exclude(@cisco.com) Message".format(name),
+}
 
 def help():
     response = "Hello, I'm {0} Bot.  Just tag me with a message and I will send the content of the message via email to all members of the Spark Space.  \n\nE.G: @{1} Send this message via email!".format(name, name)
