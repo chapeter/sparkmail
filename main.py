@@ -230,15 +230,12 @@ def getSender(personId):
 
     return user['displayName']
 
-def buildEmail(message, message_text, senderId, roomId):
+def buildEmail(message, message_text, senderId, roomId, excludelist):
     sender = getSender(senderId)
     subject = getSubject(message_text, message)
     roomurl = getRoomURL(roomId)
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
-    excludelist = []
-    sys.stderr.write("getting ready to run getExcludelist on {}".format(message_text))
-    excludelist = getExcludelist(message_text)
     #I'm thinking of adding exclude list here
     recipients = getRecipients(message, excludelist)
 
@@ -309,6 +306,7 @@ def injest():
                     response = help()
                     spark_msg = response
                 elif '/exclude' in msg.split()[0]:
+                    excludelist = getExcludelist(msg)
                     msg = removeCMD(msg, '/exclude')
                     room.send_message(session, received())
                     response = buildEmail(message, msg, sender, message.roomId)
