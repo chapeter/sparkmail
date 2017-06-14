@@ -155,9 +155,14 @@ def getRecipients(message, excludelist):
     roomid = message.roomId
     users = getUsers(roomid)
     for useraddress in users:
+        sys.stderr.write("Looking at {}'s address".format(useraddress))
         for domain in excludelist:
+            sys.stderr.write("Looking for {0} in {1}'s address".format(domain, useraddress))
             if domain in useraddress:
+                sys.stderr.write("Found {0} in {1}".format(domain, useraddress))
                 users.remove(useraddress)
+            else:
+                sys.stderr.write("Did not find {0} in {1}".format(domain,useraddress))
     return users
 
 def getExcludelist(message_text):
@@ -166,6 +171,7 @@ def getExcludelist(message_text):
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
         for item in raw_list:
             if "." in item:
+                sys.stderr.write("Found {} in exclude command".format(item))
                 excludelist.append(item)
     
     return excludelist
