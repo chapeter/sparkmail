@@ -167,6 +167,7 @@ def getRecipients(message, excludelist):
 
 def getExcludelist(message_text):
     excludelist = []
+    sys.stderr.write("Running in getExcludelist")
     sys.stderr.write(message_text)
     if "/exclude" in message_text:
         raw_list = message_text.split("/exclude")[1].split(")")[0].split("(")[1].split("@")
@@ -236,6 +237,7 @@ def buildEmail(message, message_text, senderId, roomId):
     footer = "\n\nContinue the conversation on spark {}".format(roomurl)
     content = "Message from {}:\n\n".format(sender) + getContent(message_text) + footer
     excludelist = []
+    sys.stderr.write("getting ready to run getExcludelist on {}".format(message_text))
     excludelist = getExcludelist(message_text)
     #I'm thinking of adding exclude list here
     recipients = getRecipients(message, excludelist)
