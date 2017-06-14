@@ -322,7 +322,7 @@ def injest():
                     spark_msg = "Email Sent"                    
                 else:
                     room.send_message(session, received())
-                    response = buildEmail(message, msg, sender, message.roomId)
+                    response = buildEmail(message, msg, sender, message.roomId, excludelist=[])
                     spark_msg = "Email Sent"
 
             room.send_message(session, spark_msg)
